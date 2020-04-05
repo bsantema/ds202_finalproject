@@ -1,4 +1,5 @@
 ---
+author: "Brett Santema"
 title: "proposal"
 output: html_document
 ---
@@ -7,6 +8,22 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+### DS202 Project Proposal
+# Team 5
+# Group Members: Xinyi Zhu, Han Sun, Brett Santema
 
-cho = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Link to Dataset: https://www.kaggle.com/sumithbhongale/american-university-data-ipeds-dataset/home
+
+
+# An overview of the dataset
+This dataset comes from the national center for education statistics, particularly the IPEDS (Integrated Postsecondary Education Data System). There are 1534 rows, and 145 columns in the dataset.
+
+
+# A brief plan for an exploratory analysis: What questions can be answered from the dataset?
+1. Do some institutions disproportionately weigh ACT score over SAT score for admissions or vice versa?
+2. How does the size of the institution correspond to total tuition and fees?
+3. Do different religious beliefs affect the enrollment rate of college students?
+4. How does the total price of in-state and out-of-state living on campus in different regions affect the admission rate?
+5. How are SAT scores distributed and affect the enrollment rate of college students?
+6. How is estimated freshman enrollment distributed for full time students?
+
