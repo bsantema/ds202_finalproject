@@ -1,0 +1,12 @@
+---
+title: "proposal"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+cho = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
