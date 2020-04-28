@@ -1,0 +1,103 @@
+---
+title: "brettFinalProject"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(plotly)
+```
+
+## Do some institutions disproportionately weigh ACT score over SAT score for admissions or vice versa?
+Important columns from the original dataset: 
+  Name
+
+  Applicants total
+  Admissions total
+
+  Percent of freshmen submitting SAT scores
+  Percent of freshmen submitting ACT scores
+
+  SAT Critical Reading 25th percentile score
+  SAT Critical Reading 75th percentile score
+  SAT Math 25th percentile score
+  SAT Math 75th percentile score	
+  ACT Composite 25th percentile score
+  ACT Composite 75th percentile score
+
+Important values from other sources: 
+  National average ACT score: 20.9 https://blog.prepscholar.com/average-act-score-for-2015-2014-2013-and-earlier-years
+  National average SAT scores: 496 reading, 514 math https://www.studypoint.com/ed/average-sat-scores/
+  National average SAT composite for math/reading: 505
+
+New columns I will add for analysis:
+  2 New columns for SAT reading/math composite 25th and 75th percentiles
+  2 New columns for approximate ACT/SAT averages: (25th percentile + 75th percentile)/2
+  2 New columns for the percent difference from national average: [(approximate average)-(national average)]/total points
+  1 New column for ACT bias: (SAT percent difference)-(ACT percent difference)
+  1 New column for SAT bias: (ACT percent difference)-(SAT percent difference)
+
+Order by schools with the most bias to see if some schools have a heavy towards one test or the other. 
+
+``` {r}
+IPEDS <- readxl::read_xlsx('IPEDS_data.xlsx', sheet = 'Data')
+IPEDSQ1 <- IPEDS %>%
+  select('Name', 'Applicants total','Admissions total','Percent of freshmen submitting SAT scores','Percent of freshmen submitting ACT scores',
+         'SAT Critical Reading 25th percentile score', 'SAT Critical Reading 75th percentile score', 'SAT Math 25th percentile score',
+         'SAT Math 75th percentile score', 'ACT Composite 25th percentile score', 'ACT Composite 75th percentile score') 
+
+names(IPEDSQ1) <- c("Name", "Applicants","Admissions","PctSAT","PctACT","SATRead25","SATRead75","SATMath25","SATMath75","ACT25","ACT75")
+
+IPEDSQ1 <- na.omit(IPEDSQ1)
+
+IPEDSQ1$SATMathAvg = (IPEDSQ1$SATMath25 + IPEDSQ1$SATMath75)/2
+IPEDSQ1$SATReadAvg = (IPEDSQ1$SATRead25 + IPEDSQ1$SATRead75)/2
+
+#Average composite scores for each test
+IPEDSQ1$SATAvg = (IPEDSQ1$SATMathAvg + IPEDSQ1$SATReadAvg)/2
+IPEDSQ1$ACTAvg = (IPEDSQ1$ACT25 + IPEDSQ1$ACT75)/2
+
+#Difference from national average. Positive value means that school has high scores for that test compared to national average. 
+IPEDSQ1$ACTDiff = (IPEDSQ1$ACTAvg-21)/36
+IPEDSQ1$SATDiff = (IPEDSQ1$SATAvg-505)/800
+
+#Bias towards one test or the other. High ACT bias means ACT scores are disproportionately low compared to SAT scores at that school. 
+#Low ACT bias means ACT scores are disproportionately high compared to SAT scores at that school. 
+IPEDSQ1$ACTBias = IPEDSQ1$SATDiff-IPEDSQ1$ACTDiff
+IPEDSQ1$SATBias = IPEDSQ1$ACTDiff-IPEDSQ1$SATDiff
+
+#Remove schools with <10 percent of students taking one test so we are only looking at schools who consider both tests. 
+IPEDSQ1<-IPEDSQ1[!(IPEDSQ1$PctACT<10 | IPEDSQ1$PctSAT<10),]
+order(IPEDSQ1$ACTBias)
+df <-IPEDSQ1[order(IPEDSQ1$ACTBias),]
+print(head(df,10))
+print(head(df$ACTBias,10))
+print(tail(df$ACTBias,10))
+print(head(df$Name,10))
+print(tail(df$Name,10))
+print(mean(IPEDSQ1[["ACTBias"]]))
+
+```
+## How does the size of the institution correspond to total tuition and fees?
+Important columns from the original dataset: 
+  Name
+  
+  Applicants total
+  Admissions total
+  Enrolled total
+  Percent admitted - total
+  
+  Tuition and fees, 2013-14
+  
+Size of institution will be represented as Enrolled total
+Exclusivity will be represented as Percent admitted - total
+
+Compare size of institution to tuition and fees
+Compare exclusivity to tuition and fees
+  
+
+
+
