@@ -1,0 +1,63 @@
+---
+title: "ds202_project"
+author: "Rohan Mishra"
+date: "4/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+IPEDS_data
+```
+## creates an unscaled plot of all percentages for every zip code
+```{r}
+x = IPEDS_data$Name
+X = IPEDS_data$`ZIP code`
+y = IPEDS_data$`Percent of freshmen receiving any financial aid`
+plot(X, y, main = "Zip Code To Financial Aid",
+     xlab = "Zip Code", ylab = "Financial Aid (in PCT)",
+     pch = 1, frame = FALSE)
+```
+## Creates a list of the lowest percentage students recieving financial aid
+```{r}
+df = data.frame(x,X,y)
+newdata <- df[order(-y, x, X),]
+newdata
+```
+## Creates a list of the highest percentage students recieving financial aid
+```{r}
+df = data.frame(x,X,y)
+newdata <- df[order(y, x, X),]
+newdata
+```
+## Creates a scaled plot for all percentages of students recieving financial aid per zip code
+```{r}
+library(ggplot2)
+sp<-ggplot(IPEDS_data, aes(x, y)) + geom_point()
+sp + expand_limits(x=c(0,30), y=c(0, 150))
+sp
+```
+## Graph of students who submit SAT scores to Enrolled
+```{r}
+k = IPEDS_data$`Percent of freshmen submitting SAT scores`
+Enrolled = IPEDS_data$`Enrolled total`
+k_in_pct = k/100*n
+Number_of_Students_Who_Submit_SAT = round(k_in_pct)
+df2 = data.frame(Number_of_Students_Who_Submit_SAT,enrolled)
+ggplot(df2, aes(x=Enrolled, y=Number_of_Students_Who_Submit_SAT, color=Enrolled)) + geom_point(size=2, shape=23) + geom_smooth(method=lm ,linetype="dashed", color="darkred", fill="blue")
+```
+## creates dataframe for higher SAT scores
+```{r}
+df3 = data.frame(x,Number_of_Students_Who_Submit_SAT,enrolled)
+boop <- df3[order(x,Enrolled, -Number_of_Students_Who_Submit_SAT),]
+head(boop)
+```
+
+```{r}
+loop <- df3[order(Enrolled, Number_of_Students_Who_Submit_SAT,x),]
+loop
+```
