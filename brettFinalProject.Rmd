@@ -97,6 +97,31 @@ Exclusivity will be represented as Percent admitted - total
 
 Compare size of institution to tuition and fees
 Compare exclusivity to tuition and fees
+
+```{r}
+IPEDS <- readxl::read_xlsx('IPEDS_data.xlsx', sheet = 'Data')
+IPEDSQ2 <- IPEDS %>%
+  select('Name', 'Applicants total','Admissions total','Enrolled total','Percent admitted - total','Tuition and fees, 2013-14') 
+
+names(IPEDSQ2) <- c("Name", "Applicants","Admissions","Enrolled","PctAdmitted","Cost")
+
+IPEDSQ2 <- na.omit(IPEDSQ2)
+
+print(head(IPEDSQ2, 10))
+
+plot <- IPEDSQ2 %>%
+  ggplot(aes(x = Enrolled, y = Cost)) + geom_point()+ geom_smooth(method = "lm") + xlim(0, 10000) + ylim(0,50000)
+print(plot)
+
+plot <- IPEDSQ2 %>%
+  ggplot(aes(x = PctAdmitted, y = Cost)) + geom_point()+ geom_smooth(method = "lm")+ xlim(0, 100) + ylim(0,50000)
+print(plot)
+
+plot <- IPEDSQ2 %>%
+  ggplot(aes(x = Applicants, y = Cost)) + geom_point()+ geom_smooth(method = "lm")+ xlim(0, 80000) + ylim(0,50000)
+print(plot)
+
+```
   
 
 

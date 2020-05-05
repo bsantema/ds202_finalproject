@@ -1,0 +1,54 @@
+---
+title: "HanFinalProject(34)"
+author: "Han Sun"
+date: "2020.4.28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+## Do different religious beliefs affect the enrollment rate of college students?
+```{r,fig.width=12, fig.height=10}
+IPEDS <- readxl::read_xlsx('IPEDS_data.xlsx', sheet = 'Data')
+
+IPEDSQ3 <- IPEDS %>%
+  select('Name', 'Religious affiliation','Total  enrollment') %>%
+  drop_na()
+
+names(IPEDSQ3) <- c("Name","Religious","Total enrollment")
+IPEDSQ3$Religious = as.factor(IPEDSQ3$Religious)
+
+IPEDSQ3 %>% 
+  group_by(Religious) %>%
+  mutate(Total = sum(`Total enrollment`)) %>%
+  ggplot(aes(x = Religious, y = Total)) + geom_point() + coord_flip() + geom_text(aes(label = Total),hjust = -0.1, nudge_x = 0.05,size = 2.5)
+```
+
+
+
+
+## How does the total price of in-state and out-of-state living on campus affect the enrollment rate?
+```{r}
+IPEDSQ4 <- IPEDS %>%
+  select('Name','Applicants total', 'Enrolled total','Total price for in-state students living on campus 2013-14','Total price for out-of-state students living on campus 2013-14') %>%
+  drop_na()
+names(IPEDSQ4) <- c("Name","Applicants","Enrolled", "instate", "outofstate")
+
+IPEDSQ4$Enrolled_rate = IPEDSQ4$Enrolled/IPEDSQ4$Applicants
+IPEDSQ4 %>%
+  ggplot(aes(x = Enrolled_rate, y = instate)) + geom_point() + geom_smooth(method = "lm", se = FALSE) + ylim(0, 70000) +
+  geom_hline(yintercept = mean(IPEDSQ4$instate)) + 
+  geom_vline(xintercept = mean(IPEDSQ4$Enrolled_rate)) + 
+  ggtitle("Total $ of in-state living on campus and the enrollment rate")
+IPEDSQ4  %>%
+  ggplot(aes(x = Enrolled_rate, y = outofstate)) + geom_point() + geom_smooth(method = "lm", se = FALSE) + ylim(0, 70000) +
+  geom_hline(yintercept = mean(IPEDSQ4$outofstate)) + 
+  geom_vline(xintercept = mean(IPEDSQ4$Enrolled_rate)) + 
+  ggtitle("Total $ of out-of-state living on campus and the enrollment rate")
+```
+
